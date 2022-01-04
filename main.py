@@ -10,14 +10,11 @@ from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.decomposition import PCA
-import matplotlib.pyplot as plt
 import plotly.express as px 
-
-st.title("Streamlit Example")
+st.title("Machine Learning classifiers")
 
 st.write("""
 # Explore the different classifier 
-Which one is the Best?
 """)
 
 dataset_name = st.sidebar.selectbox("Select the dataset",("Iris Dataset","Breast Cancer","Wine dataset"))
@@ -26,8 +23,9 @@ classifier_name = st.sidebar.selectbox("Select the classifier",("k-nearest neigh
                                                                 "Support Vector Classification",
                                                                 "Gradient Boosting",
                                                                 "AdaBoost classifier",
+                                                                "Multi-layer Perceptron classifier",
                                                                 "Random Forest",
-                                                                "Multi-layer Perceptron classifier"))
+                                                                ))
 
 def get_dataset(dataset_name):
     if dataset_name == "Iris":
@@ -52,36 +50,36 @@ st.write("Number of Output classes:",len(np.unique(y)))
 def add_parameter_ui(clf_name):
     params = dict()
     if clf_name == "k-nearest neighbors":
-        K_kn = st.sidebar.slider("Number of neighbors: ",1,50)
-        weights_kn = st.sidebar.selectbox("Select the weight:",("uniform","distance"))
-        algorithm_kn = st.sidebar.selectbox("Select the algorithm:",("auto","ball_tree","kd_tree","brute"))
-        leaf_size_kn = st.sidebar.slider("Select the leaf size: ",10,100)
-        p_kn = st.sidebar.slider("Select the value of P: ",1,2)
+        K_kn = st.sidebar.slider("Number of neighbors: ",1,50,value=5,step=5)
+        weights_kn = st.sidebar.selectbox("Select the weight:",("uniform","distance"),index=0)
+        algorithm_kn = st.sidebar.selectbox("Select the algorithm:",("auto","ball_tree","kd_tree","brute"),index=0)
+        leaf_size_kn = st.sidebar.slider("Select the leaf size: ",10,100,value=30,step=10)
+        p_kn = st.sidebar.slider("Select the value of P: ",1,2,value=2)
         params["leaf_size_kn"] = leaf_size_kn
         params["weights_kn"] = weights_kn
         params["K_kn"] = K_kn
         params["algorithm_kn"] = algorithm_kn
         params["p_kn"] = p_kn
     elif clf_name == "Support Vector Classification":
-        C_svc= st.sidebar.slider("C",0.01,10.0)
-        kernel_svc = st.sidebar.selectbox("Select the kernal",("linear","poly","rbf","sigmoid"))
+        C_svc= st.sidebar.slider("C",0.01,10.0,value=1.0)
+        kernel_svc = st.sidebar.selectbox("Select the kernal",("linear","poly","rbf","sigmoid"),index=2)
         if kernel_svc == "poly":
-            degree_svc = st.sidebar.slider("Select the Degree ",0,15)
+            degree_svc = st.sidebar.slider("Select the Degree ",0,15,value=3)
             params["degree_svc"] = degree_svc
         elif kernel_svc == "poly" or "rbf" or "sigmoid":
-            gamma_svc = st.sidebar.selectbox("Select the gamma ",("scale","auto"))
+            gamma_svc = st.sidebar.selectbox("Select the gamma ",("scale","auto"),index=0)
             params["gamma_svc"] = gamma_svc
-        cache_size_svc = st.sidebar.slider("Select the cache Size:",100,500)
+        cache_size_svc = st.sidebar.slider("Select the cache Size:",100,500,value=200)
         params["cache_size_svc"] = cache_size_svc
         params["C_svc"] = C_svc
         params["kernel_svc"] = kernel_svc
     elif clf_name == "Gradient Boosting":
-        loss = st.sidebar.selectbox("Select the loss function: ",("deviance","exponential"))
-        learning_rate_grad = st.sidebar.slider("Learning rate: ",0.01,1.0)
-        n_estimators_grad = st.sidebar.slider("n_estimators: ", 100, 300)
-        subsample_grad = st.sidebar.slider("Select subsample: ", 0.1,1.0)
-        criterion_grad = st.sidebar.selectbox("Select the criterion: ", ("friedman_mse","squared_error","mse","mae"))
-        max_depth_grad = st.sidebar.slider("Select max_depth_grad: ",1,5)
+        loss = st.sidebar.selectbox("Select the loss function: ",("deviance","exponential"),index=0)
+        learning_rate_grad = st.sidebar.slider("Learning rate: ",0.01,1.0,value=0.1)
+        n_estimators_grad = st.sidebar.slider("n_estimators: ", 100, 300,value=100)
+        subsample_grad = st.sidebar.slider("Select subsample: ", 0.1,1.0,value=1.0)
+        criterion_grad = st.sidebar.selectbox("Select the criterion: ", ("friedman_mse","squared_error","mse","mae"),index=0)
+        max_depth_grad = st.sidebar.slider("Select max_depth_grad: ",1,5,value=3,step=1)
         params["learning_rate_grad"] = learning_rate_grad
         params["n_estimator_grad"] = n_estimators_grad
         params["subsample_grad"] = subsample_grad
@@ -89,37 +87,37 @@ def add_parameter_ui(clf_name):
         params["max_depth_grad"] = max_depth_grad
         params["loss_grad"] = loss
     elif clf_name == "AdaBoost classifier":
-        n_estimators_ada = st.sidebar.slider("Select number of estimator: ",10,100)
-        learning_rate_ada = st.sidebar.slider("Select the learning rate: ",0.01,1.0)
-        algorithm_ada = st.sidebar.selectbox("Select the algorithm: ",("SAMME","SAMME.R"))
+        n_estimators_ada = st.sidebar.slider("Select number of estimator: ",10,100,value=50,step=10)
+        learning_rate_ada = st.sidebar.slider("Select the learning rate: ",0.01,1.0,value=1.0)
+        algorithm_ada = st.sidebar.selectbox("Select the algorithm: ",("SAMME","SAMME.R"),index=1)
         params["n_estimators_ada"] = n_estimators_ada
         params["learning_rate_ada"] = learning_rate_ada
         params["algorithm_ada"] = algorithm_ada
     elif clf_name == "Multi-layer Perceptron classifier":
-        activation_mlp = st.sidebar.selectbox("Select activation Function: ",("identity","logistic","tanh","relu")) 
-        solver_mlp = st.sidebar.selectbox("Select the solver: ",("lbfgs","sgd","adam"))
-        alpha_mlp = st.sidebar.slider("Select the alpha: ",0.0001,1.0)
+        activation_mlp = st.sidebar.selectbox("Select activation Function: ",("identity","logistic","tanh","relu"),index=3) 
+        solver_mlp = st.sidebar.selectbox("Select the solver: ",("lbfgs","sgd","adam"),index=2)
+        alpha_mlp = st.sidebar.slider("Select the alpha: ",0.0001,1.0,value=0.0001)
         if solver_mlp == "sgd":
-            learning_rate_mlp = st.sidebar.selectbox("Select the learning rate :",("constant","invscaling","adaptive"))
+            learning_rate_mlp = st.sidebar.selectbox("Select the learning rate :",("constant","invscaling","adaptive"),index=0)
             params["learning_rate_mlp"] = learning_rate_mlp
-            learning_rate_init_mlp = st.sidebar.slider("Select the learning rate in integer:",0.0001,1.0)
+            learning_rate_init_mlp = st.sidebar.slider("Select the learning rate in integer:",0.0001,1.0,value=0.001)
             params["learning_rate_init_mlp"] = learning_rate_init_mlp 
-            shuffle_mlp = st.sidebar.selectbox("Shuffle in each iteration:",(True,False))
+            shuffle_mlp = st.sidebar.selectbox("Shuffle in each iteration:",(True,False),index=0)
             params["shuffle_mlp"] = shuffle_mlp
         if solver_mlp == "adam":
-            learning_rate_init_mlp = st.sidebar.slider("Select the learning rate in integer:",0.0001,1.0)
+            learning_rate_init_mlp = st.sidebar.slider("Select the learning rate in integer:",0.0001,1.0,value=0.001)
             params["learning_rate_init_mlp"] = learning_rate_init_mlp
-            shuffle_mlp = st.sidebar.selectbox("Shuffle in each iteration:",(True,False))
+            shuffle_mlp = st.sidebar.selectbox("Shuffle in each iteration:",(True,False),index=0)
             params["shuffle_mlp"] = shuffle_mlp 
         params["activation_mlp"] = activation_mlp
         params["solver_mlp"] = solver_mlp
         params["alpha_mlp"] = alpha_mlp
     else:
-        max_depth = st.sidebar.slider("Select maximum depth of the tree: ",2,15)
-        n_estimator = st.sidebar.slider("Number of tree in the forest: ", 1,100)
-        criterion = st.sidebar.selectbox("Select the criterion: ",("gini","entropy"))
-        min_samples_split = st.sidebar.slider("Select Minimum number of sample required to split: ",0.1,1.0)
-        max_features = st.sidebar.selectbox("Select the number of feature: ",("auto","sqrt","log2"))
+        max_depth = st.sidebar.slider("Select maximum depth of the tree: ",1,15)
+        n_estimator = st.sidebar.slider("Number of tree in the forest: ", 1,200,value=100)
+        criterion = st.sidebar.selectbox("Select the criterion: ",("gini","entropy"),index=0)
+        min_samples_split = st.sidebar.slider("Select Minimum number of sample required to split: ",0.1,1.0,value=1.0)
+        max_features = st.sidebar.selectbox("Select the number of feature: ",("auto","sqrt","log2"),index=0)
         params["max_features"] = max_features
         params["criterion"] = criterion
         params["max_depth"] = max_depth
