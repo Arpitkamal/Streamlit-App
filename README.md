@@ -18,9 +18,6 @@ User can apply these Classifier on different dataset:
 3. Wine dataset
 
 
-# Click here to open the Application [Streamlit App](https://share.streamlit.io/arpitkamal/streamlit-app/main/main.py)
-
-
 # How to Install Dependencies to Run the application.
 
 The following bash code will install all the necessary dependencies.
